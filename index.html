@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMCOE Assistant – Marathwada Mitra Mandal's College of Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0A1628;--navy-light:#1a3260;--gold:#C8960C;--gold-bright:#F5B800;
+    --glass:rgba(255,255,255,0.06);--glass-border:rgba(200,150,12,0.22);
+    --text-main:#E8EAF0;--text-sub:#8B9BBE;--radius:16px;--shadow:0 8px 48px rgba(0,0,0,0.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text-main);min-height:100vh;overflow:hidden;}
+  .bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 15% 20%,#112550 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 80%,#1a2a10 0%,transparent 55%),var(--navy);}
+  .bg-canvas::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(200,150,12,0.12) 1px,transparent 0);background-size:36px 36px;animation:gridPulse 8s ease-in-out infinite;}
+  @keyframes gridPulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite;}
+  .orb-1{width:400px;height:400px;background:rgba(200,150,12,0.08);top:-100px;right:-100px;}
+  .orb-2{width:300px;height:300px;background:rgba(10,50,120,0.25);bottom:-50px;left:-80px;animation-delay:-6s;}
+  @keyframes orbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+  #app{position:relative;z-index:1;width:100%;height:100vh;display:flex;align-items:center;justify-content:center;}
+  .screen{display:none;width:100%;height:100%;align-items:center;justify-content:center;}
+  .screen.active{display:flex;}
+
+  .auth-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(24px);border-radius:24px;padding:48px 44px;width:460px;box-shadow:var(--shadow);animation:cardIn .6s cubic-bezier(.22,.68,0,1.2) forwards;}
+  @keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+  .logo-wrap{text-align:center;margin-bottom:28px;}
+  .logo-shield{width:72px;height:72px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:12px;box-shadow:0 4px 24px rgba(200,150,12,0.4);animation:shimmer 3s ease-in-out infinite;}
+  @keyframes shimmer{0%,100%{box-shadow:0 4px 24px rgba(200,150,12,0.4)}50%{box-shadow:0 4px 40px rgba(245,184,0,0.65)}}
+  .brand-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--gold-bright);}
+  .brand-sub{font-size:.78rem;color:var(--text-sub);letter-spacing:.06em;text-transform:uppercase;margin-top:4px;}
+  .tab-row{display:flex;gap:4px;background:rgba(0,0,0,0.25);border-radius:12px;padding:4px;margin-bottom:28px;}
+  .tab-btn{flex:1;padding:10px;border:none;border-radius:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;background:transparent;color:var(--text-sub);transition:all .25s;}
+  .tab-btn.active{background:var(--gold);color:var(--navy);font-weight:600;}
+  .form-group{margin-bottom:18px;}
+  .form-label{display:block;font-size:.82rem;color:var(--text-sub);margin-bottom:8px;}
+  .form-input{width:100%;padding:13px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(200,150,12,0.18);border-radius:11px;color:var(--text-main);font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;}
+  .form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,12,0.14);}
+  .form-input::placeholder{color:rgba(139,155,190,0.5);}
+  .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border:none;border-radius:12px;color:var(--navy);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 18px rgba(200,150,12,0.35);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(200,150,12,0.5);}
+  .skip-link{text-align:center;margin-top:18px;font-size:.85rem;color:var(--text-sub);}
+  .skip-link a{color:var(--gold);text-decoration:none;font-weight:500;}
+  .msg-box{font-size:.84rem;padding:10px 14px;border-radius:9px;margin-bottom:14px;}
+  .msg-error{background:rgba(229,62,62,0.12);border:1px solid rgba(229,62,62,0.3);color:#FC8181;}
+  .msg-success{background:rgba(56,161,105,0.12);border:1px solid rgba(56,161,105,0.3);color:#68D391;}
+
+  #chat-screen{padding:0;}
+  .chat-layout{display:flex;width:100%;height:100vh;max-width:1400px;margin:0 auto;padding:20px;gap:16px;}
+  .sidebar{width:280px;flex-shrink:0;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;transition:width .3s;}
+  .sidebar.collapsed{width:64px;}
+  .sidebar-header{padding:18px 16px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .sidebar-logo{width:36px;height:36px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .sidebar-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--gold-bright);white-space:nowrap;}
+  .sidebar-sub{font-size:.72rem;color:var(--text-sub);white-space:nowrap;}
+  .sidebar-nav{padding:12px 8px;flex:1;overflow-y:auto;}
+  .nav-section-title{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sub);padding:6px 10px;margin-top:4px;white-space:nowrap;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px;border-radius:10px;cursor:pointer;font-size:.87rem;color:var(--text-sub);transition:background .18s,color .18s;white-space:nowrap;overflow:hidden;border:none;background:none;width:100%;text-align:left;}
+  .nav-item:hover{background:rgba(200,150,12,0.1);color:var(--text-main);}
+  .nav-icon{font-size:1.1rem;flex-shrink:0;}
+  .nav-label{overflow:hidden;text-overflow:ellipsis;}
+  .history-list{flex:1;overflow-y:auto;padding:4px 0;}
+  .history-item{padding:8px 10px;border-radius:9px;cursor:pointer;font-size:.82rem;color:var(--text-sub);transition:all .18s;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;border:none;background:none;width:100%;text-align:left;}
+  .history-item:hover{background:rgba(255,255,255,0.06);color:var(--text-main);}
+  .history-item-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+  .history-item-text{overflow:hidden;text-overflow:ellipsis;}
+  .sidebar-footer{padding:12px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;}
+  .user-chip{display:flex;align-items:center;gap:10px;padding:10px;border-radius:11px;background:rgba(255,255,255,0.04);white-space:nowrap;overflow:hidden;}
+  .user-avatar{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold),#e8a800);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--navy);flex-shrink:0;}
+  .user-name{font-size:.82rem;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .user-email{font-size:.72rem;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .chat-main{flex:1;display:flex;flex-direction:column;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);border-radius:var(--radius);overflow:hidden;min-width:0;}
+  .chat-topbar{padding:16px 20px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:14px;flex-shrink:0;}
+  .topbar-toggle{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--text-sub);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
+  .topbar-toggle:hover{background:rgba(200,150,12,0.14);color:var(--gold);}
+  .topbar-info{flex:1;min-width:0;}
+  .topbar-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--gold-bright);}
+  .topbar-sub{font-size:.77rem;color:var(--text-sub);}
+  .topbar-actions{display:flex;gap:8px;}
+  .icon-btn{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);color:var(--text-sub);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+  .icon-btn:hover{background:rgba(200,150,12,0.14);color:var(--gold);border-color:rgba(200,150,12,0.3);}
+
+  .messages-area{flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth;}
+  .messages-area::-webkit-scrollbar{width:4px;}
+  .messages-area::-webkit-scrollbar-thumb{background:rgba(200,150,12,0.3);border-radius:4px;}
+  .welcome-banner{text-align:center;padding:28px 16px;animation:fadeUp .5s ease forwards;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .welcome-icon{font-size:3.5rem;margin-bottom:14px;}
+  .welcome-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold-bright);margin-bottom:8px;}
+  .welcome-desc{color:var(--text-sub);font-size:.9rem;max-width:420px;margin:0 auto 24px;line-height:1.6;}
+  .quick-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .chip{padding:8px 16px;border-radius:20px;background:rgba(200,150,12,0.1);border:1px solid rgba(200,150,12,0.25);color:var(--gold-bright);font-size:.82rem;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;}
+  .chip:hover{background:rgba(200,150,12,0.22);transform:translateY(-1px);}
+  .msg-row{display:flex;gap:10px;animation:msgIn .3s ease forwards;}
+  @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .msg-row.user{flex-direction:row-reverse;}
+  .msg-avatar{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;margin-top:4px;}
+  .msg-avatar.bot{background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:var(--navy);}
+  .msg-avatar.user-av{background:linear-gradient(135deg,#4C6EF5,#7048E8);color:#fff;}
+  .msg-bubble{max-width:72%;padding:12px 16px;border-radius:16px;font-size:.9rem;line-height:1.7;word-break:break-word;}
+  .msg-bubble.bot{background:rgba(255,255,255,0.07);border:1px solid var(--glass-border);color:var(--text-main);border-top-left-radius:4px;}
+  .msg-bubble.user-b{background:linear-gradient(135deg,rgba(76,110,245,0.3),rgba(112,72,232,0.3));border:1px solid rgba(112,72,232,0.3);color:var(--text-main);border-top-right-radius:4px;}
+  .msg-time{font-size:.7rem;color:var(--text-sub);margin-top:4px;}
+  .msg-row.user .msg-time{text-align:right;}
+
+  .msg-bubble.bot .rs{margin-bottom:12px;}
+  .msg-bubble.bot .rt{color:var(--gold-bright);font-weight:700;font-size:.93rem;margin-bottom:6px;display:block;}
+  .msg-bubble.bot .rl{list-style:none;padding:0;margin:0;}
+  .msg-bubble.bot .rl li{padding:3px 0 3px 16px;position:relative;color:var(--text-main);font-size:.88rem;}
+  .msg-bubble.bot .rl li::before{content:'›';position:absolute;left:0;color:var(--gold);font-weight:700;}
+  .msg-bubble.bot .rtb{width:100%;border-collapse:collapse;margin:6px 0;font-size:.83rem;}
+  .msg-bubble.bot .rtb th{background:rgba(200,150,12,0.18);padding:7px 10px;text-align:left;border-bottom:1px solid rgba(200,150,12,0.25);color:var(--gold-bright);}
+  .msg-bubble.bot .rtb td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .msg-bubble.bot .bdg{display:inline-block;background:rgba(200,150,12,0.15);border:1px solid rgba(200,150,12,0.3);color:var(--gold-bright);border-radius:6px;padding:2px 9px;font-size:.78rem;margin:2px 3px 2px 0;}
+  .msg-bubble.bot .hl{color:var(--gold-bright);font-weight:600;}
+  .msg-bubble.bot .note{background:rgba(255,255,255,0.05);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:8px;font-size:.83rem;color:var(--text-sub);}
+
+  .typing-row{display:flex;gap:10px;}
+  .typing-bubble{background:rgba(255,255,255,0.07);border:1px solid var(--glass-border);border-radius:16px;border-top-left-radius:4px;padding:14px 18px;display:flex;gap:5px;align-items:center;}
+  .typing-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:tB 1.2s ease-in-out infinite;}
+  .typing-dot:nth-child(2){animation-delay:.2s;}
+  .typing-dot:nth-child(3){animation-delay:.4s;}
+  @keyframes tB{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-5px);opacity:1}}
+
+  .chat-input-area{padding:16px 20px;border-top:1px solid var(--glass-border);flex-shrink:0;}
+  .input-row{display:flex;gap:10px;align-items:flex-end;}
+  .chat-input{flex:1;padding:13px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(200,150,12,0.2);border-radius:14px;color:var(--text-main);font-family:'DM Sans',sans-serif;font-size:.93rem;resize:none;outline:none;min-height:48px;max-height:140px;line-height:1.5;transition:border-color .2s;scrollbar-width:none;}
+  .chat-input:focus{border-color:rgba(200,150,12,0.5);}
+  .chat-input::placeholder{color:rgba(139,155,190,0.5);}
+  .send-btn{width:44px;height:44px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border:none;border-radius:12px;cursor:pointer;color:var(--navy);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .2s;box-shadow:0 3px 14px rgba(200,150,12,0.4);}
+  .send-btn:hover{transform:translateY(-1px);}
+  .send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .input-hint{font-size:.73rem;color:var(--text-sub);text-align:center;margin-top:8px;}
+  .msg-count-bar{font-size:.78rem;color:var(--gold);margin-top:6px;text-align:center;}
+  .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .suggestion-pill{padding:5px 13px;border-radius:14px;font-size:.78rem;background:rgba(200,150,12,0.09);border:1px solid rgba(200,150,12,0.2);color:var(--text-sub);cursor:pointer;transition:all .15s;}
+  .suggestion-pill:hover{background:rgba(200,150,12,0.18);color:var(--gold-bright);}
+  .login-gate-msg{background:linear-gradient(135deg,rgba(200,150,12,0.1),rgba(245,184,0,0.07));border:1px solid rgba(200,150,12,0.3);border-radius:14px;padding:16px 20px;text-align:center;margin:8px 0;}
+  .login-gate-msg p{font-size:.9rem;color:var(--gold-bright);margin-bottom:10px;}
+  .gate-btn{padding:9px 22px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));border:none;color:var(--navy);font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;font-size:.87rem;}
+
+  .history-panel{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:rgba(10,22,40,0.97);backdrop-filter:blur(24px);border-left:1px solid var(--glass-border);z-index:100;transition:right .35s;display:flex;flex-direction:column;}
+  .history-panel.open{right:0;}
+  .panel-header{padding:20px 20px 16px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;}
+  .panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-bright);}
+  .panel-close{background:none;border:none;color:var(--text-sub);cursor:pointer;font-size:1.3rem;}
+  .panel-search{padding:12px 16px;border-bottom:1px solid var(--glass-border);}
+  .panel-search input{width:100%;padding:9px 14px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);border-radius:10px;color:var(--text-main);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;}
+  .panel-list{flex:1;overflow-y:auto;padding:12px;}
+  .history-card{background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .18s;}
+  .history-card:hover{background:rgba(200,150,12,0.08);border-color:rgba(200,150,12,0.25);}
+  .history-card-title{font-size:.88rem;font-weight:600;color:var(--text-main);margin-bottom:5px;}
+  .history-card-preview{font-size:.78rem;color:var(--text-sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .history-card-meta{display:flex;justify-content:space-between;margin-top:8px;}
+  .history-card-date{font-size:.72rem;color:var(--text-sub);}
+  .history-card-count{font-size:.72rem;color:var(--gold);background:rgba(200,150,12,0.12);padding:2px 8px;border-radius:10px;}
+  .panel-empty{text-align:center;padding:40px 20px;color:var(--text-sub);font-size:.88rem;}
+  .panel-empty-icon{font-size:2.5rem;margin-bottom:12px;opacity:.5;}
+  .overlay-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none;}
+  .overlay-backdrop.show{display:block;}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:#48BB78;display:inline-block;margin-right:6px;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy-light);border:1px solid var(--glass-border);border-radius:12px;padding:12px 22px;z-index:200;font-size:.87rem;color:var(--text-main);box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .3s cubic-bezier(.22,.68,0,1.2);}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .admin-panel{position:fixed;top:0;right:-480px;width:460px;height:100vh;background:rgba(8,18,36,0.98);backdrop-filter:blur(24px);border-left:1px solid var(--glass-border);z-index:100;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+  .admin-panel.open{right:0;}
+  .admin-header{padding:20px 20px 16px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .admin-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-bright);display:flex;align-items:center;gap:8px;}
+  .admin-close{background:none;border:none;color:var(--text-sub);cursor:pointer;font-size:1.3rem;padding:4px;}
+  .admin-close:hover{color:var(--text-main);}
+  .admin-stats{display:flex;gap:10px;padding:14px 20px;border-bottom:1px solid var(--glass-border);flex-shrink:0;}
+  .stat-card{flex:1;background:rgba(200,150,12,0.08);border:1px solid rgba(200,150,12,0.2);border-radius:12px;padding:12px;text-align:center;}
+  .stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--gold-bright);line-height:1;}
+  .stat-label{font-size:.72rem;color:var(--text-sub);margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+  .admin-search{padding:12px 16px;border-bottom:1px solid var(--glass-border);}
+  .admin-search input{width:100%;padding:9px 14px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);border-radius:10px;color:var(--text-main);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;}
+  .admin-search input:focus{border-color:rgba(200,150,12,0.4);}
+  .admin-search input::placeholder{color:rgba(139,155,190,0.5);}
+  .admin-list{flex:1;overflow-y:auto;padding:14px;}
+  .admin-list::-webkit-scrollbar{width:4px;}
+  .admin-list::-webkit-scrollbar-thumb{background:rgba(200,150,12,0.3);border-radius:4px;}
+  .admin-footer{padding:12px 16px;border-top:1px solid var(--glass-border);flex-shrink:0;font-size:.75rem;color:var(--text-sub);text-align:center;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#0f1e38;border:1px solid var(--glass-border);border-radius:20px;padding:32px 28px;width:360px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,0.7);animation:cardIn .3s cubic-bezier(.22,.68,0,1.2);}
+  .modal-icon{font-size:2.4rem;text-align:center;margin-bottom:12px;}
+  .modal-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--gold-bright);text-align:center;margin-bottom:8px;}
+  .modal-desc{font-size:.87rem;color:var(--text-sub);text-align:center;line-height:1.6;margin-bottom:24px;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btn{flex:1;padding:12px;border:none;border-radius:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:600;transition:transform .15s,box-shadow .2s;}
+  .modal-btn.confirm{background:linear-gradient(135deg,#e53e3e,#c53030);color:#fff;box-shadow:0 4px 14px rgba(229,62,62,0.35);}
+  .modal-btn.confirm:hover{transform:translateY(-1px);}
+  .modal-btn.cancel{background:rgba(255,255,255,0.07);border:1px solid var(--glass-border);color:var(--text-main);}
+  .modal-btn.cancel:hover{background:rgba(255,255,255,0.12);}
+
+  @media(max-width:768px){.chat-layout{padding:10px;gap:10px;}.sidebar{display:none;}.msg-bubble{max-width:85%;}.auth-card{width:96%;padding:32px 24px;}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div id="app">
+
+  <div id="auth-screen" class="screen active">
+    <div class="auth-card">
+      <div class="logo-wrap">
+        <div class="logo-shield">&#127891;</div>
+        <div class="brand-name">MMCOE Assistant</div>
+        <div class="brand-sub">Marathwada Mitra Mandal's College of Engineering</div>
+      </div>
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('register')">Create Account</button>
+      </div>
+      <div id="auth-msg"></div>
+      <div id="login-form">
+        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="login-email" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="login-pass" placeholder="Enter your password"></div>
+        <button class="btn-primary" onclick="handleLogin()">Sign In &rarr;</button>
+        <div class="skip-link" style="margin-top:14px;"><a href="#" onclick="guestLogin()">Continue as Guest (5 free messages)</a></div>
+      </div>
+      <div id="register-form" style="display:none;">
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="reg-name" placeholder="Your full name"></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="reg-email" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="reg-pass" placeholder="Min. 6 characters"></div>
+        <button class="btn-primary" onclick="handleRegister()">Create Account &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="chat-screen" class="screen">
+    <div class="chat-layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">&#127891;</div>
+          <div><div class="sidebar-title">MMCOE</div><div class="sidebar-sub">AI Assistant</div></div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-title">QUICK ACCESS</div>
+          <button class="nav-item" onclick="sendQuick('about')"><span class="nav-icon">&#127963;&#65039;</span><span class="nav-label">About College</span></button>
+          <button class="nav-item" onclick="sendQuick('admission')"><span class="nav-icon">&#128203;</span><span class="nav-label">Admissions</span></button>
+          <button class="nav-item" onclick="sendQuick('courses')"><span class="nav-icon">&#128218;</span><span class="nav-label">Courses &amp; Branches</span></button>
+          <button class="nav-item" onclick="sendQuick('fees')"><span class="nav-icon">&#128176;</span><span class="nav-label">Fee Structure</span></button>
+          <button class="nav-item" onclick="sendQuick('placements')"><span class="nav-icon">&#128188;</span><span class="nav-label">Placements</span></button>
+          <button class="nav-item" onclick="sendQuick('scholarships')"><span class="nav-icon">&#127942;</span><span class="nav-label">Scholarships</span></button>
+          <button class="nav-item" onclick="sendQuick('facilities')"><span class="nav-icon">&#127968;</span><span class="nav-label">Facilities</span></button>
+          <button class="nav-item" onclick="sendQuick('contact')"><span class="nav-icon">&#128205;</span><span class="nav-label">Contact &amp; Location</span></button>
+          <div class="nav-section-title" style="margin-top:10px;">HISTORY</div>
+          <div id="sidebar-history" class="history-list"></div>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar" id="nav-avatar">G</div>
+            <div><div class="user-name" id="nav-name">Guest User</div><div class="user-email" id="nav-email">guest mode</div></div>
+          </div>
+          <button class="nav-item" style="margin-top:6px;color:#FC8181;" onclick="logout()"><span class="nav-icon">&#128682;</span><span class="nav-label">Sign Out</span></button>
+        </div>
+      </aside>
+
+      <main class="chat-main">
+        <div class="chat-topbar">
+          <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-info">
+            <div class="topbar-title"><span class="status-dot"></span>MMCOE AI Assistant</div>
+            <div class="topbar-sub">Karve Nagar, Pune &bull; NAAC A++ | Autonomous</div>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-btn" onclick="openAdminPanel()" title="Registered Users" id="admin-btn" style="display:none;">&#128101;</button>
+            <button class="icon-btn" onclick="openHistory()" title="History">&#128336;</button>
+            <button class="icon-btn" onclick="newChat()" title="New Chat">&#9998;&#65039;</button>
+            <button class="icon-btn" onclick="clearChat()" title="Clear">&#128465;&#65039;</button>
+          </div>
+        </div>
+
+        <div class="messages-area" id="messages-area">
+          <div id="welcome-banner" class="welcome-banner">
+            <div class="welcome-icon">&#127891;</div>
+            <div class="welcome-title">Welcome to MMCOE</div>
+            <div class="welcome-desc">Your intelligent guide for everything about Marathwada Mitra Mandal's College of Engineering &mdash; admissions, courses, fees, placements &amp; more.</div>
+            <div class="quick-chips">
+              <span class="chip" onclick="sendQuick('about')">&#127963;&#65039; About MMCOE</span>
+              <span class="chip" onclick="sendQuick('admission')">&#128203; How to Apply</span>
+              <span class="chip" onclick="sendQuick('courses')">&#128218; Branches</span>
+              <span class="chip" onclick="sendQuick('placements')">&#128188; Placements</span>
+              <span class="chip" onclick="sendQuick('fees')">&#128176; Fees</span>
+              <span class="chip" onclick="sendQuick('contact')">&#128205; Contact</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="suggestions">
+            <span class="suggestion-pill" onclick="sendQuick('cutoff')">Cutoff marks</span>
+            <span class="suggestion-pill" onclick="sendQuick('documents')">Documents needed</span>
+            <span class="suggestion-pill" onclick="sendQuick('naac')">NAAC Grade</span>
+            <span class="suggestion-pill" onclick="sendQuick('hostel')">Hostel info</span>
+            <span class="suggestion-pill" onclick="sendQuick('tfws')">TFWS Scheme</span>
+            <span class="suggestion-pill" onclick="sendQuick('mca')">MCA / MBA</span>
+          </div>
+          <div id="login-gate" style="display:none;" class="login-gate-msg">
+            <p>&#128272; You've used your 5 free messages. Sign in to continue chatting!</p>
+            <button class="gate-btn" onclick="showAuth()">Sign In / Create Account</button>
+          </div>
+          <div class="input-row">
+            <textarea class="chat-input" id="chat-input" placeholder="Ask anything about MMCOE... e.g. fees, cutoff, hostel" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()">&#10148;</button>
+          </div>
+          <div class="input-hint"><span class="status-dot"></span>Instant knowledge-powered assistant &bull; Press Enter to send</div>
+          <div class="msg-count-bar" id="msg-count-bar" style="display:none;"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="logout-modal">
+  <div class="modal-box">
+    <div class="modal-icon">&#128682;</div>
+    <div class="modal-title">Sign Out?</div>
+    <div class="modal-desc">Are you sure you want to sign out of your MMCOE Assistant account?</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeLogoutModal()">No, Stay</button>
+      <button class="modal-btn confirm" onclick="confirmLogout()">Yes, Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-panel" id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-title">&#128101; Registered Users</div>
+    <button class="admin-close" onclick="closeAdminPanel()">&#10005;</button>
+  </div>
+  <div class="admin-stats">
+    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Users</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-today">0</div><div class="stat-label">Joined Today</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-active">0</div><div class="stat-label">With Chats</div></div>
+  </div>
+  <div class="admin-search">
+    <input type="text" id="admin-search-input" placeholder="Search by name or email..." oninput="filterUsers(this.value)">
+  </div>
+  <div class="admin-list" id="admin-list"></div>
+  <div class="admin-footer">Data stored locally in browser &bull; Only visible to admin</div>
+</div>
+
+<div class="overlay-backdrop" id="backdrop" onclick="closeHistory();closeAdminPanel();"></div>
+<div class="history-panel" id="history-panel">
+  <div class="panel-header"><div class="panel-title">&#128336; Chat History</div><button class="panel-close" onclick="closeHistory()">&#10005;</button></div>
+  <div class="panel-search"><input type="text" placeholder="Search conversations..." id="history-search" oninput="filterHistory(this.value)"></div>
+  <div class="panel-list" id="panel-list"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   MMCOE KNOWLEDGE BASE — instant local answers, no API needed
+   ============================================================ */
+const KB = {
+about:`<div class="rs"><span class="rt">About MMCOE</span><ul class="rl">
+<li><span class="hl">Full Name:</span> Marathwada Mitra Mandal's College of Engineering (MMCOE)</li>
+<li><span class="hl">Location:</span> Survey No. 66/1, Karvenagar, Pune - 411052, Maharashtra, India</li>
+<li><span class="hl">Established:</span> 2006</li>
+<li><span class="hl">Type:</span> Private, Autonomous Engineering College</li>
+<li><span class="hl">Affiliation:</span> Savitribai Phule Pune University (SPPU)</li>
+<li><span class="hl">Approved by:</span> AICTE (All India Council for Technical Education)</li>
+<li><span class="hl">NAAC Grade:</span> A++ (Highest Grade in India)</li>
+<li><span class="hl">Institute Code:</span> 06156</li>
+<li><span class="hl">Website:</span> www.mmcoe.edu.in</li>
+</ul></div>
+<div class="note">MMCOE is one of the top-ranked autonomous engineering colleges in Pune with NAAC A++ accreditation.</div>`,
+
+courses:`<div class="rs"><span class="rt">Undergraduate Programs (B.E. - 4 Years)</span><ul class="rl">
+<li>Computer Engineering (CE)</li>
+<li>Information Technology (IT)</li>
+<li>Artificial Intelligence &amp; Data Science (AI&amp;DS)</li>
+<li>Electronics &amp; Telecommunication Engineering (E&amp;TC)</li>
+<li>Electrical Engineering (EE)</li>
+<li>Mechanical Engineering (ME)</li>
+</ul></div>
+<div class="rs"><span class="rt">Postgraduate Programs</span><ul class="rl">
+<li><span class="hl">M.E. / M.Tech (2 Yrs):</span> Computer Engineering, E&amp;TC, Mechanical Design</li>
+<li><span class="hl">MBA (2 Yrs):</span> General Management</li>
+<li><span class="hl">MCA (2 Yrs):</span> Master of Computer Applications</li>
+<li><span class="hl">Ph.D:</span> Engineering &amp; Research fields</li>
+</ul></div>
+<div class="note">Total 6 UG branches. Admissions via MHT-CET / JEE Main through CAP rounds.</div>`,
+
+fees:`<div class="rs"><span class="rt">B.E. / B.Tech Fee Structure (Approx.)</span>
+<table class="rtb"><tr><th>Fee Component</th><th>Amount</th></tr>
+<tr><td>Tuition Fee (4 years total)</td><td>~Rs.4.21 Lakh</td></tr>
+<tr><td>Development Fee</td><td>Rs.63,132</td></tr>
+<tr><td>Caution Deposit</td><td>Rs.10,000</td></tr>
+<tr><td><strong>Total (4 Years)</strong></td><td><strong>~Rs.4.94 Lakh</strong></td></tr>
+</table></div>
+<div class="rs"><span class="rt">Category-wise Fee Concessions</span>
+<table class="rtb"><tr><th>Category</th><th>Benefit</th></tr>
+<tr><td>Open Category</td><td>Full fees (~Rs.4-5 Lakh)</td></tr>
+<tr><td>OBC / EWS</td><td>~50% tuition concession (Govt)</td></tr>
+<tr><td>SC / ST</td><td>Near-free; scholarship covers most fees</td></tr>
+<tr><td>TFWS Scheme</td><td>Tuition = Rs.0 (only other fees paid)</td></tr>
+<tr><td>Minority</td><td>Varies yearly (similar to Open)</td></tr>
+</table></div>
+<div class="rs"><span class="rt">Other Program Fees</span><ul class="rl">
+<li>MBA (2 Yrs): Rs.1.08 L - Rs.1.92 L total</li>
+<li>M.Tech (2 Yrs): Rs.95K - Rs.1.7 L total</li>
+<li>MCA (2 Yrs): ~Rs.4,000/year (govt-linked)</li>
+<li>Hostel: ~Rs.1.07 L/year</li>
+</ul></div>
+<div class="note">Fees change yearly per AFRC Maharashtra. Verify current fees at MMCOE: <strong>020-25463890</strong></div>`,
+
+admission:`<div class="rs"><span class="rt">Admission Process for B.Tech</span><ul class="rl">
+<li><span class="hl">Entrance:</span> MHT-CET or JEE Main score</li>
+<li><span class="hl">Process:</span> CAP (Centralized Admission Process) by State CET Cell</li>
+<li><span class="hl">Register at:</span> cetcell.mahacet.org</li>
+<li><span class="hl">Lateral Entry:</span> Direct 2nd Year for Diploma holders (DSY)</li>
+<li><span class="hl">Other Quota:</span> NRI / Management quota seats available</li>
+</ul></div>
+<div class="rs"><span class="rt">Eligibility</span><ul class="rl">
+<li>10+2 with Physics, Chemistry, Mathematics</li>
+<li>Minimum <span class="hl">45%</span> aggregate - General category</li>
+<li>Minimum <span class="hl">40%</span> aggregate - Reserved category</li>
+<li>Valid MHT-CET / JEE Main score required</li>
+</ul></div>
+<div class="rs"><span class="rt">Admission Timeline (Approximate)</span><ul class="rl">
+<li>MHT-CET Exam: April - May</li>
+<li>CAP Round 1: July</li>
+<li>CAP Round 2: August</li>
+<li>CAP Round 3: August - September</li>
+<li>Academic Year Begins: September - October</li>
+</ul></div>
+<div class="note">Helpline: <strong>020-25463890</strong> | Register: <strong>cetcell.mahacet.org</strong></div>`,
+
+cutoff:`<div class="rs"><span class="rt">MHT-CET Cutoff Percentiles (Approx.)</span>
+<table class="rtb"><tr><th>Branch</th><th>Cutoff Range</th></tr>
+<tr><td>Computer Engineering</td><td>90 - 97 percentile</td></tr>
+<tr><td>Information Technology</td><td>85 - 93 percentile</td></tr>
+<tr><td>AI &amp; Data Science</td><td>85 - 94 percentile</td></tr>
+<tr><td>E&amp;TC Engineering</td><td>75 - 88 percentile</td></tr>
+<tr><td>Electrical Engineering</td><td>65 - 82 percentile</td></tr>
+<tr><td>Mechanical Engineering</td><td>60 - 80 percentile</td></tr>
+</table></div>
+<div class="rs"><span class="rt">JEE Main - Category-wise Cutoff (Approx.)</span>
+<table class="rtb"><tr><th>Category</th><th>Percentile (Approx.)</th></tr>
+<tr><td>General (Open)</td><td>~90 - 91</td></tr>
+<tr><td>OBC</td><td>~73 - 74</td></tr>
+<tr><td>SC</td><td>~51 - 52</td></tr>
+<tr><td>ST</td><td>~37 - 38</td></tr>
+</table></div>
+<div class="note">Cutoffs vary every year. Always check official CAP round data at cetcell.mahacet.org for exact figures.</div>`,
+
+placements:`<div class="rs"><span class="rt">Placement Statistics</span><ul class="rl">
+<li>Highest Package (India): <span class="hl">Rs.10 LPA</span></li>
+<li>Highest Package (International): <span class="hl">Rs.25 LPA</span></li>
+<li>Average Package: <span class="hl">Rs.3.5 - Rs.4.5 LPA</span></li>
+<li>200+ companies visit campus every year</li>
+<li>Pre-placement training, mock interviews &amp; soft skills development</li>
+</ul></div>
+<div class="rs"><span class="rt">Top Recruiters</span>
+<div><span class="bdg">TCS</span><span class="bdg">Infosys</span><span class="bdg">Wipro</span><span class="bdg">Cognizant</span><span class="bdg">Capgemini</span><span class="bdg">Tech Mahindra</span><span class="bdg">Persistent Systems</span><span class="bdg">Accenture</span><span class="bdg">L&amp;T Technology</span><span class="bdg">Cummins</span><span class="bdg">Bharat Forge</span><span class="bdg">Mercedes-Benz R&amp;D</span></div>
+</div>
+<div class="note">MMCOE's active Placement Cell ensures industry exposure, training and strong hiring outcomes.</div>`,
+
+scholarships:`<div class="rs"><span class="rt">Scholarships Available at MMCOE</span><ul class="rl">
+<li><span class="hl">Govt. of Maharashtra:</span> For SC / ST / OBC students</li>
+<li><span class="hl">EBC Scholarship:</span> Economically Backward Class students</li>
+<li><span class="hl">TFWS:</span> Tuition Fee Waiver - full tuition waived</li>
+<li><span class="hl">Rajarshi Chhatrapati Shahu Maharaj Scholarship</span></li>
+<li><span class="hl">Merit Scholarships:</span> For top academic performers</li>
+<li><span class="hl">Minority Scholarships:</span> For eligible minority students</li>
+</ul></div>
+<div class="note">Apply for government scholarships at: <strong>mahadbt.maharashtra.gov.in</strong><br>For MMCOE-specific scholarships: <strong>020-25463890</strong></div>`,
+
+tfws:`<div class="rs"><span class="rt">TFWS - Tuition Fee Waiver Scheme</span><ul class="rl">
+<li><span class="hl">What is it?</span> Government scheme that completely waives tuition fees</li>
+<li><span class="hl">Tuition Fee:</span> Rs.0 (fully waived under this scheme)</li>
+<li><span class="hl">Other Fees:</span> Development fee, exam fee etc. still payable</li>
+<li><span class="hl">Eligibility:</span> Based on family income &amp; merit - verified during CAP</li>
+<li><span class="hl">Seats:</span> Limited TFWS quota seats per branch</li>
+</ul></div>
+<div class="note">TFWS seats allocated during CAP process. Apply at <strong>cetcell.mahacet.org</strong> and select TFWS preference during option form filling.</div>`,
+
+facilities:`<div class="rs"><span class="rt">Infrastructure &amp; Facilities</span><ul class="rl">
+<li>Smart classrooms with digital boards</li>
+<li>Advanced Labs: AI, Robotics, Electronics, Mechanical, Computer Labs</li>
+<li>Central Library: 30,000+ books, e-journals (24/7 access)</li>
+<li>Wi-Fi enabled campus</li>
+<li>Auditorium: 800+ seating capacity</li>
+<li>Canteen and food court</li>
+<li>Sports complex: cricket, basketball, volleyball</li>
+<li>Innovation &amp; Entrepreneurship Cell</li>
+<li>NSS and NCC units</li>
+<li>Dedicated Training &amp; Placement Cell</li>
+</ul></div>
+<div class="rs"><span class="rt">Hostel</span><ul class="rl">
+<li>Girls Hostel: On campus</li>
+<li>Boys Hostel: Nearby campus</li>
+<li>Fee: ~Rs.1.07 Lakh/year</li>
+</ul></div>`,
+
+hostel:`<div class="rs"><span class="rt">Hostel Facilities at MMCOE</span><ul class="rl">
+<li><span class="hl">Girls Hostel:</span> Available on campus</li>
+<li><span class="hl">Boys Hostel:</span> Available nearby campus</li>
+<li><span class="hl">Annual Fee:</span> ~Rs.1.07 Lakh/year (approx.)</li>
+<li><span class="hl">Total 4-year:</span> ~Rs.3.6 Lakh (approx.)</li>
+<li>Mess / canteen facility included</li>
+<li>24-hour security and Wi-Fi connectivity</li>
+</ul></div>
+<div class="note">For hostel allotment &amp; availability: <strong>020-25463890</strong> | Email: <strong>principal@mmcoe.edu.in</strong></div>`,
+
+contact:`<div class="rs"><span class="rt">MMCOE Contact Information</span><ul class="rl">
+<li><span class="hl">Address:</span> Survey No. 66/1, Karvenagar, Pune - 411052, Maharashtra, India</li>
+<li><span class="hl">Phone:</span> 020-25463890 | 020-25454956</li>
+<li><span class="hl">Email:</span> principal@mmcoe.edu.in</li>
+<li><span class="hl">Website:</span> www.mmcoe.edu.in</li>
+<li><span class="hl">Institute Code:</span> 06156</li>
+</ul></div>
+<div class="rs"><span class="rt">Office Hours</span><ul class="rl">
+<li>Monday - Saturday: 9:00 AM - 5:00 PM</li>
+<li>Admission helpline active during CAP season (July - September)</li>
+</ul></div>
+<div class="note">For admissions: <strong>cetcell.mahacet.org</strong> | For scholarships: <strong>mahadbt.maharashtra.gov.in</strong></div>`,
+
+naac:`<div class="rs"><span class="rt">Accreditation &amp; Recognition</span><ul class="rl">
+<li><span class="hl">NAAC Grade: A++</span> - Highest possible grade in India</li>
+<li>NBA Accredited programs</li>
+<li>AICTE Approved</li>
+<li>Autonomous Institute status</li>
+<li>Affiliated to Savitribai Phule Pune University (SPPU)</li>
+<li>Ranked among top engineering colleges in Pune</li>
+</ul></div>
+<div class="note">NAAC A++ reflects outstanding academic standards, research output, infrastructure quality, and student outcomes.</div>`,
+
+documents:`<div class="rs"><span class="rt">Documents Required for MMCOE Admission</span><ul class="rl">
+<li>SSC (10th) Marksheet &amp; Certificate</li>
+<li>HSC (12th) Marksheet &amp; Certificate</li>
+<li>School / College Leaving Certificate</li>
+<li>Domicile Certificate (Maharashtra)</li>
+<li>Caste Certificate (if applicable - SC/ST/OBC/NT)</li>
+<li>MHT-CET or JEE Main Scorecard</li>
+<li>Photo ID Proof (Aadhar, PAN, etc.)</li>
+<li>Passport-size Photographs (6-8 copies)</li>
+<li>Income Certificate (for fee concession / scholarship)</li>
+<li>Non-Creamy Layer Certificate (OBC candidates)</li>
+<li>Diploma Certificate (for Lateral Entry / DSY students)</li>
+</ul></div>
+<div class="note">Carry originals + 2 sets of photocopies. Verified at CAP rounds and during MMCOE admission.</div>`,
+
+mca:`<div class="rs"><span class="rt">MCA at MMCOE</span><ul class="rl">
+<li><span class="hl">Program:</span> Master of Computer Applications (MCA) - 2 Years</li>
+<li><span class="hl">Fee:</span> ~Rs.4,000/year (government-linked, highly affordable)</li>
+<li><span class="hl">Eligibility:</span> Bachelor's degree with Mathematics at 10+2 or graduation level</li>
+</ul></div>
+<div class="rs"><span class="rt">MBA at MMCOE</span><ul class="rl">
+<li><span class="hl">Program:</span> MBA - Master of Business Administration (2 Years)</li>
+<li><span class="hl">Specialization:</span> General Management</li>
+<li><span class="hl">Fee:</span> Rs.1.08 L - Rs.1.92 L (total 2 years)</li>
+<li><span class="hl">Eligibility:</span> Any bachelor's degree + valid MAH-MBA CET / CAT / MAT score</li>
+</ul></div>
+<div class="note">Contact for PG admissions: <strong>020-25463890</strong> | <strong>www.mmcoe.edu.in</strong></div>`,
+
+events:`<div class="rs"><span class="rt">Events &amp; Student Activities</span><ul class="rl">
+<li><span class="hl">Technotsav:</span> Annual Technical Festival</li>
+<li><span class="hl">Srishti:</span> Annual Cultural Festival</li>
+<li>Robotics Club</li>
+<li>Coding Club</li>
+<li>Photography Club</li>
+<li>IEEE Student Branch</li>
+<li>CSI (Computer Society of India) Chapter</li>
+<li>NCC Unit</li>
+<li>NSS Unit</li>
+<li>Inter-college sports tournaments</li>
+</ul></div>`,
+
+help:`<div class="rs"><span class="rt">How can I help you?</span>
+<p style="color:var(--text-sub);font-size:.88rem;margin-bottom:12px;line-height:1.6;">I have complete information about MMCOE. Click any topic below or type your question:</p>
+<div>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('about')">About MMCOE</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('courses')">Courses</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('fees')">Fees</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('admission')">Admission</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('cutoff')">Cutoff</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('placements')">Placements</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('scholarships')">Scholarships</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('tfws')">TFWS</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('facilities')">Facilities</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('hostel')">Hostel</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('contact')">Contact</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('documents')">Documents</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('naac')">NAAC</span>
+<span class="bdg" style="cursor:pointer;padding:5px 12px;" onclick="sendQuick('mca')">MCA/MBA</span>
+</div></div>
+<div class="note">Try typing: "fees for SC category", "cutoff for CS", "hostel charges", "how to apply" etc.</div>`
+};
+
+const LABELS = {
+  about:"Tell me about MMCOE college",courses:"What courses and branches are offered at MMCOE?",
+  fees:"What is the fee structure at MMCOE?",admission:"How to apply for admission at MMCOE?",
+  cutoff:"What are the cutoff marks for MMCOE?",placements:"Tell me about MMCOE placements",
+  scholarships:"What scholarships are available at MMCOE?",tfws:"What is the TFWS Scheme at MMCOE?",
+  facilities:"What facilities does MMCOE have?",hostel:"Tell me about MMCOE hostel",
+  contact:"MMCOE contact information and address",naac:"What is MMCOE's NAAC grade?",
+  documents:"Documents required for MMCOE admission",mca:"MCA and MBA programs at MMCOE",
+  events:"Events and clubs at MMCOE",help:"Help - MMCOE topics"
+};
+
+/* Instant KB lookup — pattern-match then return pre-built HTML */
+function getResponse(input) {
+  const q = input.toLowerCase().trim();
+  if (KB[q]) return {label: LABELS[q]||q, html: KB[q]};
+
+  const rules = [
+    {t:'about', p:['about mmcoe','what is mmcoe','tell me about mmcoe','overview','mmcoe college','established','founded','history']},
+    {t:'courses', p:['course','branch','program','department','b.e','btech','b.tech','mtech','m.tech','computer eng','information tech','e&tc','electrical','mechanical','ai&ds','ai and data','artificial intel','what branch','which branch','cse','ece']},
+    {t:'fees', p:['fee','fees','cost','tuition','charges','how much','price','payment','rupee','lakh','total amount','annual fee','semester fee']},
+    {t:'admission', p:['admission','apply','how to get','eligibility','entrance','mht-cet','mhtcet','jee','cap round','lateral','process','how to join','enrol','when does admission','when admission']},
+    {t:'cutoff', p:['cutoff','cut off','percentile','rank','score required','merit','opening','closing','mht cet score']},
+    {t:'placements', p:['placement','recruit','package','lpa','salary','job','company','campus','hiring','career','highest package','average package','recruiter']},
+    {t:'scholarships', p:['scholarship','free','waiver','financial aid','mahadbt','ebc','obc','sc st','sc/st','reserved','concession','financial help']},
+    {t:'tfws', p:['tfws','tuition fee waiver','fee waiver scheme','zero tuition']},
+    {t:'facilities', p:['facilit','infrastructure','lab','library','sport','gym','canteen','auditorium','wifi','wi-fi','campus facility']},
+    {t:'hostel', p:['hostel','accommo','stay','room','girls hostel','boys hostel','living','reside']},
+    {t:'contact', p:['contact','address','phone','email','location','where is','karve','nagar','reach','helpline','number','map']},
+    {t:'naac', p:['naac','accredit','rank','nba','grade','rating','autonomous','a++','a grade']},
+    {t:'documents', p:['document','required','certificate','marksheet','leaving','domicile','caste','what to bring','papers']},
+    {t:'mca', p:['mca','mba','master of comp','postgrad','pg course','management course']},
+    {t:'events', p:['event','fest','technotsav','srishti','club','ieee','ncc','nss','robotics','coding club','extra']},
+  ];
+
+  for (const r of rules) {
+    if (r.p.some(p => q.includes(p))) return {label: LABELS[r.t], html: KB[r.t]};
+  }
+
+  const greetings = ['hi','hello','hey','namaste','good morning','good evening','good afternoon','hii','helo','hai'];
+  if (greetings.some(g => q === g || q.startsWith(g + ' '))) {
+    return {label: input, html: `<div class="rs"><span class="rt">Hello! Welcome to MMCOE Assistant</span>
+<p style="color:var(--text-sub);font-size:.9rem;line-height:1.7;">I'm your dedicated guide for <span class="hl">Marathwada Mitra Mandal's College of Engineering, Pune</span>. I can help with admissions, fees, branches, placements, scholarships, hostel and more!</p></div>${KB.help}`};
+  }
+
+  return {label: input, html: KB.help};
+}
+
+/* ============================================================
+   DATABASE
+   ============================================================ */
+const DB = {
+  getUsers(){try{return JSON.parse(localStorage.getItem('mmcoe_users')||'{}');}catch{return{};}},
+  saveUsers(u){localStorage.setItem('mmcoe_users',JSON.stringify(u));},
+  getHistory(){try{return JSON.parse(localStorage.getItem('mmcoe_history')||'[]');}catch{return[];}},
+  saveHistory(h){localStorage.setItem('mmcoe_history',JSON.stringify(h));},
+  getSession(){try{return JSON.parse(localStorage.getItem('mmcoe_session')||'null');}catch{return null;}},
+  saveSession(s){localStorage.setItem('mmcoe_session',JSON.stringify(s));},
+  clearSession(){localStorage.removeItem('mmcoe_session');}
+};
+
+const ADMIN_EMAIL = 'admin@mmcoe.edu.in';
+const ADMIN_PASS  = 'mmcoe@admin2024';
+
+let state = {user:null,isGuest:false,messages:[],guestMsgCount:0,sessionId:null};
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('login-form').style.display=tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display=tab==='register'?'block':'none';
+  document.getElementById('auth-msg').innerHTML='';
+}
+function showAuthMsg(msg,type='error'){
+  document.getElementById('auth-msg').innerHTML=`<div class="msg-box msg-${type}">${msg}</div>`;
+}
+function handleLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass)return showAuthMsg('Please fill in all fields.');
+  if(email===ADMIN_EMAIL&&pass===ADMIN_PASS){
+    const users=DB.getUsers();
+    if(!users[email]){users[email]={name:'Admin',password:btoa(pass),createdAt:Date.now()};DB.saveUsers(users);}
+    return loginUser({email,name:'Admin'});
+  }
+  const users=DB.getUsers();
+  if(!users[email])return showAuthMsg('No account found with this email.');
+  if(users[email].password!==btoa(pass))return showAuthMsg('Incorrect password.');
+  loginUser({email,name:users[email].name});
+}
+function handleRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  if(!name||!email||!pass)return showAuthMsg('Please fill in all fields.');
+  if(pass.length<6)return showAuthMsg('Password must be at least 6 characters.');
+  if(!/\S+@\S+\.\S+/.test(email))return showAuthMsg('Enter a valid email address.');
+  if(email===ADMIN_EMAIL)return showAuthMsg('This email is reserved.');
+  const users=DB.getUsers();
+  if(users[email])return showAuthMsg('Account already exists with this email.');
+  users[email]={name,password:btoa(pass),createdAt:Date.now()};
+  DB.saveUsers(users);
+  showAuthMsg('Account created! Signing you in...','success');
+  setTimeout(()=>loginUser({email,name}),900);
+}
+function loginUser(user){state.user=user;state.isGuest=false;DB.saveSession(user);initChatScreen();}
+function guestLogin(){
+  const existing=parseInt(sessionStorage.getItem('mmcoe_guest_used')||'0');
+  if(existing>=5){showAuthMsg('You have used all 5 guest messages. Please sign in to continue.','error');return;}
+  state.user={name:'Guest',email:'guest'};
+  state.isGuest=true;state.guestMsgCount=existing;
+  initChatScreen();
+}
+function logout(){showLogoutModal();}
+function showLogoutModal(){document.getElementById('logout-modal').classList.add('show');}
+function closeLogoutModal(){document.getElementById('logout-modal').classList.remove('show');}
+function confirmLogout(){
+  closeLogoutModal();DB.clearSession();
+  state={user:null,isGuest:false,messages:[],guestMsgCount:0,sessionId:null};
+  document.getElementById('messages-area').innerHTML=mkWelcome("Welcome to MMCOE","Your intelligent guide for Marathwada Mitra Mandal's College of Engineering.");
+  document.getElementById('auth-screen').classList.add('active');
+  document.getElementById('chat-screen').classList.remove('active');
+  document.getElementById('login-gate').style.display='none';
+  document.getElementById('msg-count-bar').style.display='none';
+  showToast('Signed out successfully');
+}
+function showAuth(){document.getElementById('auth-screen').classList.add('active');document.getElementById('chat-screen').classList.remove('active');}
+function isAdmin(){
+  if(!state.user||state.isGuest)return false;
+  const u=DB.getUsers()[state.user.email];
+  return !!(u&&state.user.email===ADMIN_EMAIL&&u.password===btoa(ADMIN_PASS));
+}
+function mkWelcome(title,desc){
+  return `<div id="welcome-banner" class="welcome-banner">
+  <div class="welcome-icon">&#127891;</div>
+  <div class="welcome-title">${title}</div>
+  <div class="welcome-desc">${desc}</div>
+  <div class="quick-chips">
+    <span class="chip" onclick="sendQuick('about')">About MMCOE</span>
+    <span class="chip" onclick="sendQuick('admission')">How to Apply</span>
+    <span class="chip" onclick="sendQuick('courses')">Branches</span>
+    <span class="chip" onclick="sendQuick('placements')">Placements</span>
+    <span class="chip" onclick="sendQuick('fees')">Fees</span>
+    <span class="chip" onclick="sendQuick('contact')">Contact</span>
+  </div></div>`;
+}
+
+/* ============================================================
+   CHAT INIT
+   ============================================================ */
+function initChatScreen(){
+  document.getElementById('auth-screen').classList.remove('active');
+  document.getElementById('chat-screen').classList.add('active');
+  document.getElementById('nav-name').textContent=isAdmin()?'Admin':state.user.name;
+  document.getElementById('nav-email').textContent=state.isGuest?'Guest Mode':state.user.email;
+  document.getElementById('nav-avatar').textContent=state.user.name.charAt(0).toUpperCase();
+  document.getElementById('admin-btn').style.display=isAdmin()?'flex':'none';
+  state.sessionId='session_'+Date.now();
+  state.messages=[];
+  updateGuestBar();
+  loadSidebarHistory();
+}
+function updateGuestBar(){
+  const bar=document.getElementById('msg-count-bar');
+  if(state.isGuest){const r=5-state.guestMsgCount;bar.style.display='block';bar.textContent=r>0?`${r} free message${r!==1?'s':''} remaining`:'';}
+  else bar.style.display='none';
+}
+
+/* ============================================================
+   MESSAGING — purely local KB, 300ms delay for UX feel only
+   ============================================================ */
+function sendMessage(textArg){
+  const input=document.getElementById('chat-input');
+  const userText=textArg||input.value.trim();
+  if(!userText)return;
+  if(state.isGuest&&state.guestMsgCount>=5){document.getElementById('login-gate').style.display='block';return;}
+  input.value='';autoResize(input);
+  const wb=document.getElementById('welcome-banner');if(wb)wb.remove();
+
+  // Look up answer immediately (synchronous)
+  const {html}=getResponse(userText);
+
+  appendMessage('user',userText);
+  state.messages.push({role:'user',content:userText});
+  if(state.isGuest){
+    state.guestMsgCount++;
+    sessionStorage.setItem('mmcoe_guest_used',state.guestMsgCount);
+    updateGuestBar();
+    if(state.guestMsgCount>=5)setTimeout(()=>{document.getElementById('login-gate').style.display='block';},300);
+  }
+  showTyping();
+  document.getElementById('send-btn').disabled=true;
+
+  // 300ms for typing animation only — no network call
+  setTimeout(()=>{
+    hideTyping();
+    appendMessage('bot',html);
+    state.messages.push({role:'bot',content:html});
+    saveSession(userText);
+    loadSidebarHistory();
+    document.getElementById('send-btn').disabled=false;
+    document.getElementById('chat-input').focus();
+  },300);
+}
+
+function sendQuick(key){
+  if(state.isGuest&&state.guestMsgCount>=5){document.getElementById('login-gate').style.display='block';return;}
+  const wb=document.getElementById('welcome-banner');if(wb)wb.remove();
+  const isKey=!!KB[key];
+  const label=isKey?(LABELS[key]||key):key;
+  const html=isKey?KB[key]:getResponse(key).html;
+  appendMessage('user',label);
+  state.messages.push({role:'user',content:label});
+  if(state.isGuest){
+    state.guestMsgCount++;
+    sessionStorage.setItem('mmcoe_guest_used',state.guestMsgCount);
+    updateGuestBar();
+    if(state.guestMsgCount>=5)setTimeout(()=>{document.getElementById('login-gate').style.display='block';},300);
+  }
+  showTyping();
+  document.getElementById('send-btn').disabled=true;
+  setTimeout(()=>{
+    hideTyping();
+    appendMessage('bot',html);
+    state.messages.push({role:'bot',content:html});
+    saveSession(label);
+    loadSidebarHistory();
+    document.getElementById('send-btn').disabled=false;
+  },300);
+}
+
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function appendMessage(role,content){
+  const area=document.getElementById('messages-area');
+  const time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const isBot=role==='bot';
+  const row=document.createElement('div');row.className='msg-row'+(isBot?'':' user');
+  const av=document.createElement('div');av.className='msg-avatar '+(isBot?'bot':'user-av');
+  av.textContent=isBot?'G':(state.user?.name?.charAt(0).toUpperCase()||'U');
+  const bub=document.createElement('div');bub.className='msg-bubble '+(isBot?'bot':'user-b');
+  bub.innerHTML=isBot?content:esc(content);
+  const t=document.createElement('div');t.className='msg-time';t.textContent=time;
+  const w=document.createElement('div');w.appendChild(bub);w.appendChild(t);
+  row.appendChild(av);row.appendChild(w);
+  area.appendChild(row);area.scrollTop=area.scrollHeight;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showTyping(){
+  const area=document.getElementById('messages-area');
+  const el=document.createElement('div');el.className='typing-row';el.id='typing-indicator';
+  el.innerHTML='<div class="msg-avatar bot">G</div><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  area.appendChild(el);area.scrollTop=area.scrollHeight;
+}
+function hideTyping(){const el=document.getElementById('typing-indicator');if(el)el.remove();}
+
+/* ============================================================
+   HISTORY
+   ============================================================ */
+function saveSession(lastMsg){
+  if(!state.user||state.isGuest||state.messages.length<2)return;
+  const history=DB.getHistory();
+  const idx=history.findIndex(h=>h.sessionId===state.sessionId);
+  const entry={
+    sessionId:state.sessionId,userEmail:state.user.email,
+    title:lastMsg.length>45?lastMsg.substring(0,45)+'...':lastMsg,
+    preview:state.messages[state.messages.length-1]?.content?.replace(/<[^>]+>/g,'').substring(0,80)+'...',
+    messages:state.messages,timestamp:Date.now(),
+    count:state.messages.filter(m=>m.role==='user').length
+  };
+  if(idx>=0)history[idx]=entry;else history.unshift(entry);
+  DB.saveHistory(history.slice(0,100));
+}
+function loadSidebarHistory(){
+  if(!state.user||state.isGuest){
+    document.getElementById('sidebar-history').innerHTML='<div style="padding:6px 10px;font-size:.78rem;color:var(--text-sub);">Sign in to save history</div>';
+    return;
+  }
+  const history=DB.getHistory().filter(h=>h.userEmail===state.user.email).slice(0,6);
+  const el=document.getElementById('sidebar-history');
+  el.innerHTML=history.length
+    ?history.map(h=>`<button class="history-item" onclick="loadSession('${h.sessionId}')"><span class="history-item-dot"></span><span class="history-item-text">${h.title}</span></button>`).join('')
+    :'<div style="padding:6px 10px;font-size:.78rem;color:var(--text-sub);">No history yet</div>';
+}
+function loadSession(sid){
+  const s=DB.getHistory().find(h=>h.sessionId===sid);if(!s)return;
+  const area=document.getElementById('messages-area');area.innerHTML='';state.messages=[];
+  s.messages.forEach(m=>{appendMessage(m.role==='user'?'user':'bot',m.content);state.messages.push(m);});
+  state.sessionId=s.sessionId;showToast('Session loaded');closeHistory();
+}
+function openHistory(){
+  if(!state.user||state.isGuest){showToast('Sign in to view history');return;}
+  renderHistoryPanel();
+  document.getElementById('history-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('show');
+}
+function closeHistory(){document.getElementById('history-panel').classList.remove('open');document.getElementById('backdrop').classList.remove('show');}
+function renderHistoryPanel(filter=''){
+  const history=DB.getHistory().filter(h=>h.userEmail===state.user?.email);
+  const filtered=filter?history.filter(h=>h.title.toLowerCase().includes(filter.toLowerCase())):history;
+  const el=document.getElementById('panel-list');
+  if(!filtered.length){el.innerHTML=`<div class="panel-empty"><div class="panel-empty-icon">&#128172;</div>${filter?'No results found':'No chat history yet.'}</div>`;return;}
+  el.innerHTML=filtered.map(h=>{
+    const d=new Date(h.timestamp).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="history-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div style="flex:1;min-width:0;" onclick="loadSession('${h.sessionId}')">
+          <div class="history-card-title">${h.title}</div>
+          <div class="history-card-preview">${h.preview||''}</div>
+          <div class="history-card-meta"><span class="history-card-date">${d}</span><span class="history-card-count">${h.count} msgs</span></div>
+        </div>
+        <button onclick="deleteSession('${h.sessionId}')" style="background:none;border:none;color:var(--text-sub);cursor:pointer;font-size:1rem;padding:4px;flex-shrink:0;opacity:.6;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">&#128465;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function deleteSession(sid){
+  DB.saveHistory(DB.getHistory().filter(h=>h.sessionId!==sid));
+  renderHistoryPanel(document.getElementById('history-search').value);
+  loadSidebarHistory();showToast('Chat deleted');
+}
+function filterHistory(v){renderHistoryPanel(v);}
+function newChat(){
+  document.getElementById('messages-area').innerHTML=mkWelcome('New Conversation','Ask me anything about MMCOE!');
+  state.messages=[];state.sessionId='session_'+Date.now();showToast('New chat started');
+}
+function clearChat(){if(state.messages.length===0)return;if(confirm('Clear this conversation?'))newChat();}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+function openAdminPanel(){
+  if(!isAdmin()){showToast('Access denied');return;}
+  renderAdminPanel();
+  document.getElementById('admin-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('show');
+}
+function closeAdminPanel(){document.getElementById('admin-panel').classList.remove('open');document.getElementById('backdrop').classList.remove('show');}
+function renderAdminPanel(filter=''){
+  if(!isAdmin())return;
+  const users=DB.getUsers(),history=DB.getHistory(),today=new Date().toDateString();
+  const allUsers=Object.entries(users).filter(([e])=>e!==ADMIN_EMAIL).map(([email,data])=>({email,...data}));
+  const filtered=filter?allUsers.filter(u=>u.name.toLowerCase().includes(filter.toLowerCase())||u.email.toLowerCase().includes(filter.toLowerCase())):allUsers;
+  document.getElementById('stat-total').textContent=allUsers.length;
+  document.getElementById('stat-today').textContent=allUsers.filter(u=>new Date(u.createdAt).toDateString()===today).length;
+  const withChats=new Set(history.map(h=>h.userEmail));
+  document.getElementById('stat-active').textContent=allUsers.filter(u=>withChats.has(u.email)).length;
+  const el=document.getElementById('admin-list');
+  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--text-sub);">${filter?'No users match.':'No registered users yet.'}</div>`;return;}
+  el.innerHTML=filtered.map(u=>{
+    const joined=u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Unknown';
+    const chats=history.filter(h=>h.userEmail===u.email).length;
+    const msgs=history.filter(h=>h.userEmail===u.email).reduce((s,h)=>s+h.count,0);
+    const initials=u.name.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+    return `<div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#e8a800);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--navy);flex-shrink:0;">${initials}</div>
+        <div><div style="font-size:.95rem;font-weight:600;color:var(--text-main);">${u.name}</div><div style="font-size:.72rem;color:var(--text-sub);">Joined: ${joined}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="grid-column:1/-1;background:rgba(255,255,255,0.04);border-radius:9px;padding:9px 12px;"><div style="font-size:.68rem;text-transform:uppercase;color:var(--text-sub);margin-bottom:3px;">EMAIL</div><div style="font-size:.83rem;color:var(--gold-bright);">${u.email}</div></div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:9px;padding:9px 12px;"><div style="font-size:.68rem;text-transform:uppercase;color:var(--text-sub);margin-bottom:3px;">SESSIONS</div><div style="font-size:.83rem;color:var(--text-main);">${chats} chats</div></div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:9px;padding:9px 12px;"><div style="font-size:.68rem;text-transform:uppercase;color:var(--text-sub);margin-bottom:3px;">MESSAGES</div><div style="font-size:.83rem;color:var(--text-main);">${msgs} msgs</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function filterUsers(val){renderAdminPanel(val);}
+
+/* BOOT */
+(function(){
+  const s=DB.getSession();
+  if(s&&s.email&&s.email!=='guest'){state.user=s;state.isGuest=false;initChatScreen();}
+})();
+</script>
+</body>
+</html>
