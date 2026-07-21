@@ -214,8 +214,11 @@ documents:`<div class="rs"><span class="rt">Documents Required for MMCOE Admissi
 events:`<div class="rs"><span class="rt">Events &amp; Student Activities</span><ul class="rl">
 <li><span class="hl">Project Exhibition :</span> UDAAN</li>
 <li><span class="hl">Fest:</span> Ensemble</li>
+<li><span class="hl">Clubs:</span></li>
 <li>IT Tech Club</li><li>ACM</li><li>Google Developer Student Club (GDSC)</li>
-<li>IEEE Student Branch</li><li>MSOC</li>
+<li>Robocon</li><li>MSOC</li>
+<li>Antrix</li><li>EESA</li>
+<li>IEEE Student Branch</li><li>Drona</li>
 <li>NCC Unit</li><li>ITSA</li>
 <li>Inter-college sports tournaments</li>
 </ul></div>`,
