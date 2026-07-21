@@ -1,28 +1,19 @@
-/* ============================================================
-   VIEWPORT HEIGHT FIX (mobile)
-   ============================================================ */
 function setVH(){document.documentElement.style.setProperty('--vh',window.innerHeight*.01+'px');}
 setVH();
 window.addEventListener('resize',setVH);
 window.addEventListener('orientationchange',()=>setTimeout(setVH,100));
 
-/* ============================================================
-   THEME TOGGLE
-   ============================================================ */
 function toggleTheme(){
   const isLight=document.documentElement.classList.toggle('light');
   localStorage.setItem('mmcoe_theme', isLight ? 'light' : 'dark');
   showToast(isLight ? '☀️ Light mode on' : '🌙 Dark mode on');
 }
-// Apply saved theme on load
+
 (function(){
   const saved = localStorage.getItem('mmcoe_theme');
   if(saved === 'light') document.documentElement.classList.add('light');
 })();
 
-/* ============================================================
-   KNOWLEDGE BASE
-   ============================================================ */
 const KB = {
 about:`<div class="rs"><span class="rt">🏛️About MMCOE</span><ul class="rl">
 <li><span class="hl">Full Name:</span> Marathwada Mitra Mandal's College of Engineering (MMCOE)</li>
@@ -291,9 +282,6 @@ function getResponse(input) {
   return {label:input, html:KB.help};
 }
 
-/* ============================================================
-   DATABASE
-   ============================================================ */
 const DB = {
   getUsers(){try{return JSON.parse(localStorage.getItem('mmcoe_users')||'{}');}catch{return{};}},
   saveUsers(u){localStorage.setItem('mmcoe_users',JSON.stringify(u));},
@@ -308,9 +296,6 @@ const ADMIN_EMAIL = 'admin@mmcoe.edu.in';
 const ADMIN_PASS  = 'mmcoe@admin2024';
 let state = {user:null,isGuest:false,messages:[],guestMsgCount:0,sessionId:null};
 
-/* ============================================================
-   AUTH
-   ============================================================ */
 function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
   document.getElementById('login-form').style.display=tab==='login'?'block':'none';
@@ -390,9 +375,6 @@ function mkWelcome(title,desc){
   </div></div>`;
 }
 
-/* ============================================================
-   CHAT INIT
-   ============================================================ */
 function initChatScreen(){
   document.getElementById('auth-screen').classList.remove('active');
   document.getElementById('chat-screen').classList.add('active');
@@ -411,9 +393,6 @@ function updateGuestBar(){
   else bar.style.display='none';
 }
 
-/* ============================================================
-   MESSAGING
-   ============================================================ */
 function sendMessage(textArg){
   const input=document.getElementById('chat-input');
   const userText=textArg||input.value.trim();
@@ -474,9 +453,6 @@ function sendQuick(key){
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
 
-/* ============================================================
-   RENDER
-   ============================================================ */
 function appendMessage(role,content){
   const area=document.getElementById('messages-area');
   const time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -500,9 +476,6 @@ function showTyping(){
 }
 function hideTyping(){const el=document.getElementById('typing-indicator');if(el)el.remove();}
 
-/* ============================================================
-   HISTORY
-   ============================================================ */
 function saveSession(lastMsg){
   if(!state.user||state.isGuest||state.messages.length<2)return;
   const history=DB.getHistory();
@@ -573,9 +546,6 @@ function clearChat(){if(state.messages.length===0)return;if(confirm('Clear this 
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-/* ============================================================
-   MOBILE SIDEBAR
-   ============================================================ */
 function toggleMobileSidebar(){
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('sidebar-overlay');
@@ -587,9 +557,6 @@ function closeMobileSidebar(){
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
-/* ============================================================
-   ADMIN
-   ============================================================ */
 function openAdminPanel(){
   if(!isAdmin()){showToast('Access denied');return;}
   renderAdminPanel();
@@ -628,17 +595,11 @@ function renderAdminPanel(filter=''){
 }
 function filterUsers(val){renderAdminPanel(val);}
 
-/* ============================================================
-   BOOT
-   ============================================================ */
 (function(){
   const s=DB.getSession();
   if(s&&s.email&&s.email!=='guest'){state.user=s;state.isGuest=false;initChatScreen();}
 })();
 
-/* ============================================================
-   SECURITY / UI RESTRICTIONS
-   ============================================================ */
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.addEventListener('keydown', function(e) {
   if (e.key === "F12") e.preventDefault();
