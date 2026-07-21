@@ -212,11 +212,11 @@ documents:`<div class="rs"><span class="rt">Documents Required for MMCOE Admissi
 <div class="note">Carry originals + 2 sets of photocopies. Verified at CAP rounds and during MMCOE admission.</div>`,
 
 events:`<div class="rs"><span class="rt">Events &amp; Student Activities</span><ul class="rl">
-<li><span class="hl">Technotsav:</span> Annual Technical Festival</li>
-<li><span class="hl">Srishti:</span> Annual Cultural Festival</li>
-<li>Robotics Club</li><li>Coding Club</li><li>Photography Club</li>
-<li>IEEE Student Branch</li><li>CSI (Computer Society of India) Chapter</li>
-<li>NCC Unit</li><li>NSS Unit</li>
+<li><span class="hl">Project Exhibition :</span> UDAAN</li>
+<li><span class="hl">Fest:</span> Ensemble</li>
+<li>IT Tech Club</li><li>ACM</li><li>Google Developer Student Club (GDSC)</li>
+<li>IEEE Student Branch</li><li>MSOC</li>
+<li>NCC Unit</li><li>ITSA</li>
 <li>Inter-college sports tournaments</li>
 </ul></div>`,
 
