@@ -45,13 +45,13 @@ fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure 2026-27</span>
 <tr><td>Caution Deposit</td><td>Rs.10,000</td></tr>
 <tr><td><strong>Total (First Years) (Excluding Exam Fees)</strong></td><td><strong>Rs.86,587</strong></td></tr>
 </table></div>
-<div class="rs"><span class="rt">Category-wise Fee Concessions</span>
+<div class="rs"><span class="rt">Category-wise Fee Concessions (Excluding Exam Fees)</span>
 <table class="rtb"><tr><th>Category</th><th>Benefit</th></tr>
-<tr><td>Open Category</td><td>Full fees (~Rs.4-5 Lakh)</td></tr>
+<tr><td>Open Category</td><td>Full fees (~Rs. 1,17,826)</td></tr>
 <tr><td>OBC / EWS</td><td>~50% tuition concession (Govt)</td></tr>
 <tr><td>SC / ST</td><td>Near-free; scholarship covers most fees</td></tr>
 <tr><td>TFWS Scheme</td><td>Tuition = Rs.0 (only other fees paid)</td></tr>
-<tr><td>Minority</td><td>Varies yearly (similar to Open)</td></tr>
+<tr><td>J&K Quota</td><td>Total Rs.34,000</td></tr>
 </table></div>
 <li>Hostel fees 1.07L including mess (2025-26): ~Rs.1.07 L/year</li>
 <div class="note">⚠️Fees change yearly per AFRC Maharashtra. Verify current fees at MMCOE: <strong>020-25479811</strong></div>`,
