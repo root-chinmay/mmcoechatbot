@@ -464,6 +464,7 @@ function appendMessage(role,content){
   bub.innerHTML=isBot?content:esc(content);
   const t=document.createElement('div');t.className='msg-time';t.textContent=time;
   const w=document.createElement('div');w.appendChild(bub);w.appendChild(t);
+  const w=document.createElement('div');w.className='msg-wrap';w.appendChild(bub);w.appendChild(t);
   row.appendChild(av);row.appendChild(w);
   area.appendChild(row);area.scrollTop=area.scrollHeight;
 }
