@@ -40,10 +40,10 @@ courses:`<div class="rs"><span class="rt">📚Undergraduate Programs (B.Tech - 4
 
 fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure 2026-27</span>
 <table class="rtb"><tr><th>Fee Component</th><th>Amount</th></tr>
-<tr><td>Tuition Fee (First Years Tution Fees for OBC)</td><td>~Rs.58,913</td></tr>
+<tr><td>Tuition Fee (First Years Tution Fees for OBC)</td><td>Rs.58,913</td></tr>
 <tr><td>Development Fee</td><td>Rs.17,674</td></tr>
 <tr><td>Caution Deposit</td><td>Rs.10,000</td></tr>
-<tr><td><strong>Total (First Years)</strong></td><td><strong>~Rs.86,587</strong></td></tr>
+<tr><td><strong>Total (First Years) (Excluding Exam Fees)</strong></td><td><strong>Rs.86,587</strong></td></tr>
 </table></div>
 <div class="rs"><span class="rt">Category-wise Fee Concessions</span>
 <table class="rtb"><tr><th>Category</th><th>Benefit</th></tr>
@@ -53,7 +53,7 @@ fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure 2026-27</span>
 <tr><td>TFWS Scheme</td><td>Tuition = Rs.0 (only other fees paid)</td></tr>
 <tr><td>Minority</td><td>Varies yearly (similar to Open)</td></tr>
 </table></div>
-<li>Hostel: ~Rs.1.07 L/year</li>
+<li>Hostel fees 1.07L including mess (2025-26): ~Rs.1.07 L/year</li>
 <div class="note">⚠️Fees change yearly per AFRC Maharashtra. Verify current fees at MMCOE: <strong>020-25479811</strong></div>`,
 
 admission:`<div class="rs"><span class="rt">📋Admission Process for B.Tech</span><ul class="rl">
