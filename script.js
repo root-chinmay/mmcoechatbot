@@ -38,12 +38,12 @@ courses:`<div class="rs"><span class="rt">📚Undergraduate Programs (B.Tech - 4
 </ul></div>
 <div class="note">📌Total 6 UG branches. Admissions via MHT-CET / JEE Main through CAP rounds.</div>`,
 
-fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure (Approx.)</span>
+fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure 2026-27</span>
 <table class="rtb"><tr><th>Fee Component</th><th>Amount</th></tr>
-<tr><td>Tuition Fee (4 years total)</td><td>~Rs.4.21 Lakh</td></tr>
-<tr><td>Development Fee</td><td>Rs.63,132</td></tr>
+<tr><td>Tuition Fee (First Years Tution Fees for OBC)</td><td>~Rs.58,913</td></tr>
+<tr><td>Development Fee</td><td>Rs.17,674</td></tr>
 <tr><td>Caution Deposit</td><td>Rs.10,000</td></tr>
-<tr><td><strong>Total (4 Years)</strong></td><td><strong>~Rs.4.94 Lakh</strong></td></tr>
+<tr><td><strong>Total (First Years)</strong></td><td><strong>~Rs.86,587</strong></td></tr>
 </table></div>
 <div class="rs"><span class="rt">Category-wise Fee Concessions</span>
 <table class="rtb"><tr><th>Category</th><th>Benefit</th></tr>
