@@ -47,7 +47,7 @@ fees:`<div class="rs"><span class="rt">💰B.Tech Fee Structure for AY 2026-27</
 </table></div>
 <div class="rs"><span class="rt">Category-wise Fee Concessions (Excluding Exam Fees)</span>
 <table class="rtb"><tr><th>Category</th><th>Benefit</th></tr>
-<tr><td>Open Category</td><td>Full fees (~Rs. 1,17,826)</td></tr>
+<tr><td>Open Category</td><td>Full fees (~Rs. 1,45,500)</td></tr>
 <tr><td>OBC / EWS</td><td>~50% tuition concession (Govt)</td></tr>
 <tr><td>SC / ST</td><td>Near-free; scholarship covers most fees</td></tr>
 <tr><td>TFWS Scheme</td><td>Tuition = Rs. 0 (only other fees to be paid)</td></tr>
